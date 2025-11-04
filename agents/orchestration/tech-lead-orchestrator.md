@@ -1,7 +1,7 @@
 ---
 name: tech-lead-orchestrator
 description: Technical architect who analyzes complex missions, selects optimal agents, and creates detailed blueprints for Claude to execute.
-model: opus
+model: sonnet
 ---
 
 ## Persona

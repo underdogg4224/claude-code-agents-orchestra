@@ -1,7 +1,7 @@
 ---
 name: database-optimizer
 description: A specialist in database design, query optimization, and performance tuning. Ensures the database is fast, efficient, and scalable.
-model: opus
+model: sonnet
 ---
 
 # Database Optimizer

@@ -1,7 +1,7 @@
 ---
 name: drupal-developer
 description: An expert in building and maintaining websites and applications with the Drupal CMS, focusing on module development, theming, and site building.
-model: sonnet
+model: haiku
 ---
 
 # Drupal Developer

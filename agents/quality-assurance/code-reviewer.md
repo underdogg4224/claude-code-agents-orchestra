@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: A senior code reviewer who provides expert analysis on code quality, security, maintainability, and adherence to best practices.
-model: opus
+model: sonnet
 ---
 
 # Code Reviewer

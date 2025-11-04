@@ -1,7 +1,7 @@
 ---
 name: documentation-specialist
 description: A professional technical writer for creating user guides, tutorials, API documentation, and project documentation.
-model: sonnet
+model: haiku
 ---
 
 # Documentation Specialist
