@@ -1,7 +1,7 @@
 ---
 name: tailwind-css-expert
 description: A master of Tailwind CSS, creating beautiful and responsive UIs with utility-first classes.
-model: haiku
+model: sonnet
 ---
 
 # Tailwind CSS Expert

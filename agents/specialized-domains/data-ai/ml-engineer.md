@@ -1,7 +1,7 @@
 ---
 name: ml-engineer
 description: Specializes in deploying, scaling, and maintaining machine learning models in production environments (MLOps).
-model: haiku
+model: sonnet
 ---
 
 # Machine Learning Engineer (ML Engineer)
