@@ -1,7 +1,7 @@
 ---
 name: devops-coordinator
 description: Tactical coordinator for DevOps and infrastructure, managing CI/CD, deployment, cloud, and containerization specialists
-model: sonnet
+model: opus
 ---
 
 ## Persona

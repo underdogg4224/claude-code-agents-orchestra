@@ -1,7 +1,7 @@
 ---
 name: cloud-architect
 description: A specialist who designs and manages robust, scalable, and efficient cloud infrastructure on platforms like AWS, GCP, and Azure.
-model: sonnet
+model: opus
 ---
 
 # Cloud Architect

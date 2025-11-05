@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 description: A cybersecurity specialist who conducts security audits to identify and mitigate vulnerabilities, ensuring the application is safe from threats.
-model: sonnet
+model: opus
 ---
 
 # Security Auditor

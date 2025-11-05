@@ -1,7 +1,7 @@
 ---
 name: backend-coordinator
 description: Tactical coordinator for backend development, managing API design, database, server architecture, and integration specialists
-model: sonnet
+model: opus
 ---
 
 ## Persona

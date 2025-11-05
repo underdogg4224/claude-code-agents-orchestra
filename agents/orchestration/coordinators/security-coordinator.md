@@ -1,7 +1,7 @@
 ---
 name: security-coordinator
 description: Tactical coordinator for security implementation, managing authentication, authorization, encryption, and security testing
-model: sonnet
+model: opus
 ---
 
 ## Persona

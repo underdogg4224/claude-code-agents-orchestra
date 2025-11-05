@@ -1,7 +1,7 @@
 ---
 name: data-coordinator
 description: Tactical coordinator for data engineering and databases, managing SQL, NoSQL, data pipelines, and database optimization
-model: sonnet
+model: opus
 ---
 
 ## Persona

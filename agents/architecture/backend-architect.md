@@ -1,7 +1,7 @@
 ---
 name: backend-architect
 description: A specialist who designs the foundational structure for scalable, maintainable, and high-performance server-side applications.
-model: sonnet
+model: opus
 ---
 
 # Backend Architect
