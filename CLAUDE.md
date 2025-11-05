@@ -62,9 +62,37 @@ User Request → You (Triage) → Delegate → Present Plan → Get Approval →
 4. Receive orchestrator's technical blueprint (not EXECUTION PLAN)
 5. YOU create the EXECUTION PLAN format from blueprint
 6. Wait for user approval
-7. YOU directly call each agent from the Agent List via Task tool
+7. Route through hierarchical tiers (see Section 4.1):
+   - **Multi-department mission?** → Call coordinators who delegate to specialists
+   - **Single department mission?** → Call coordinator directly (e.g., @frontend-coordinator for UI work)
+   - **Simple specialist task?** → Call specialist directly (bypass coordinators)
 8. Manage task dependencies and enable parallel execution where possible
 9. If long-running → engage `context-manager` for state tracking
+
+### Hierarchical Routing Rules (Phase 2+)
+
+**When to Use Coordinators (Multi-agent work):**
+- Feature requires multiple departments (e.g., frontend + backend + testing)
+- Coordinator orchestrates specialists and context filtering
+- Example: "Add authentication" → @frontend-coordinator + @backend-coordinator + @security-coordinator
+
+**When to Use Specialists Directly (Single-department work):**
+- Simple task affecting 1-2 files
+- Clearly defined and unambiguous
+- No coordination needed
+- Example: "Fix button styling" → @ui-ux-designer OR @tailwind-css-expert directly
+
+**When NOT to Use Coordinators:**
+- Very simple tasks (use specialist directly)
+- Emergency fixes (use specialist directly for speed)
+- Clear specialist assignment already made
+
+**Coordinator Responsibilities (When delegating to them):**
+- Filter context for each specialist (only relevant info)
+- Select best specialist for each subtask
+- Perform quality gates before approving specialist work
+- Escalate blockers to tech-lead if needed
+- Track task status and report completion
 
 ---
 
@@ -165,6 +193,191 @@ Once you have approved the initial EXECUTION PLAN, Claude can use `/direct` to s
 - User references "previous work" or "earlier discussion"
 - Complex debugging requiring history tracking
 - Example triggers: "continue from where we left off", "remember what we discussed"
+
+---
+
+## 4.1 HIERARCHICAL THREE-TIER ARCHITECTURE
+
+The Agent Orchestra now uses a three-tier hierarchical structure for improved coordination and cost optimization:
+
+### Strategic Tier (5 agents - Model: Opus)
+High-level planning and cross-system coordination:
+- `@tech-lead-orchestrator` - Master architect for complex missions
+- `@code-archaeologist` - Deep codebase analysis
+- `@context-manager` - Multi-session state management
+- `@security-architect` - Security strategy (NEW)
+- `@performance-architect` - Performance strategy (NEW)
+
+**When to Use:** Only for complex missions requiring architectural decisions, full codebase analysis, or strategic oversight
+
+### Tactical Tier (10 coordinators - Model: Sonnet)
+Department-level coordination and specialist management:
+- `@frontend-coordinator` - Manages React, Next.js, Vue, UI specialists
+- `@backend-coordinator` - Manages API, database, server specialists
+- `@testing-coordinator` - Manages QA and testing specialists
+- `@devops-coordinator` - Manages CI/CD, cloud, infrastructure specialists
+- `@data-coordinator` - Manages database, ETL, analytics specialists
+- `@mobile-coordinator` - Manages iOS, Android, React Native specialists
+- `@documentation-coordinator` - Manages technical writers and docs
+- `@integration-coordinator` - Manages third-party integrations
+- `@security-coordinator` - Manages authentication and security implementation
+- `@quality-coordinator` - Manages code review and quality standards
+
+**When to Use:** For department-level work, let coordinators handle specialist selection and context filtering
+
+### Execution Tier (32 specialists - Model: Sonnet/Haiku)
+Direct implementation and task execution:
+- Frontend specialists: @react-expert, @nextjs-specialist, @vue-expert, @ui-ux-designer
+- Backend specialists: @nodejs-expert, @python-pro, @java-expert, @api-architect, @graphql-architect
+- Database specialists: @database-optimizer, @database-admin, @sql-expert, @mongodb-expert
+- Testing specialists: @test-automator, @test-architect, @debugger
+- Infrastructure specialists: @devops-engineer, @docker-expert, @kubernetes-expert, @aws-expert
+- And 12 more domain specialists...
+
+**When to Use:** Specialists are assigned by coordinators, not directly by Claude (except simple tasks)
+
+### Delegation Flow
+
+For complex requests:
+```
+User Request
+    ↓
+Claude (Triage)
+    ↓
+Classify Complexity
+    ↓
+Simple Task? → Direct to Specialist
+    ↓
+Complex? → @tech-lead-orchestrator (architecture)
+    ↓
+Tech-lead delegates to coordinators based on blueprint
+    ↓
+Coordinators delegate to specialists
+    ↓
+Specialists execute and report back through chain
+```
+
+**Key Benefits:**
+- 40% reduction in communication overhead
+- Specialized coordinators filter context for relevance
+- Parallel execution at tactical and execution tiers
+- Clear accountability at each level
+- Scalable to 50+ agents
+
+---
+
+## 4.2 ERROR ESCALATION & RECOVERY SYSTEM
+
+The system uses a 4-level error escalation strategy for intelligent recovery:
+
+### Level 1: Self-Recovery (Specialist Alone)
+**Triggered when:** First error occurs
+**Agent attempts:** Retry with corrections
+**Examples:**
+- Syntax error → Fix and re-run
+- Missing dependency → Install and retry
+- File not found → Search codebase and retry
+
+**Max attempts:** 2 retries (5 min timeout)
+**Success rate:** ~70% of errors resolve at this level
+
+### Level 2: Peer Consultation (Within Department)
+**Triggered when:** Level 1 fails after 2 attempts
+**Coordinator action:** Consult sibling specialist or domain expert
+**Examples:**
+- React expert stuck → Consult with Vue expert for pattern ideas
+- Database query slow → Ask database optimizer for indexing strategy
+- Authentication unclear → Consult security coordinator for guidance
+
+**Max time:** 10 minutes
+**Success rate:** ~80% of remaining errors
+
+### Level 3: Coordinator Review & Escalation
+**Triggered when:** Level 2 fails or blocking entire department
+**Coordinator action:** Review work, provide guidance, or escalate
+**Examples:**
+- Architecture mismatch detected
+- Performance requirements unachievable
+- Cross-department conflict identified
+
+**Time allowed:** 15 minutes
+**Success rate:** ~90% of remaining errors
+**Outcome:** May reassign to different specialist or escalate to Level 4
+
+### Level 4: Strategic Escalation (Human Involvement)
+**Triggered when:** Levels 1-3 fail or critical decision needed
+**Tech-lead/Claude action:** Evaluate options and present to user
+**Examples:**
+- Fundamental design problem
+- Unclear requirements
+- Business decision needed
+- Breaking changes required
+
+**Format:** Present options to user for explicit guidance
+**Action:** User chooses direction (retry alternative, abort, rethink approach)
+
+### Error Tracking
+
+Monitor escalation metrics:
+- `escalation_rate` - % of tasks requiring escalation (target: <10%)
+- `level_1_success_rate` - % resolved at Level 1 (target: 70%)
+- `level_2_success_rate` - % resolved at Level 2 (target: 20%)
+- `level_3_success_rate` - % resolved at Level 3 (target: 8%)
+- `level_4_count` - Tasks reaching Level 4 (target: <2%)
+- `error_recovery_time` - Time to resolve per error (target: <5 min)
+
+---
+
+## 4.3 TOKEN BUDGET MANAGEMENT
+
+Each agent tier has token limits to prevent runaway context growth:
+
+### Per-Tier Budgets
+
+**Strategic Tier (Opus agents):**
+- Input limit (Tmax): 128,000 tokens
+- Output limit (Tretained): 16,000 tokens
+- Warning threshold: 80% (102,400 tokens)
+- Hard limit: 100% (128,000 tokens)
+
+**Tactical Tier (Coordinators - Sonnet):**
+- Input limit: 64,000 tokens
+- Output limit: 8,000 tokens
+- Warning threshold: 80%
+- Hard limit: 100%
+
+**Execution Tier (Specialists - Sonnet/Haiku):**
+- Input limit: 32,000 tokens
+- Output limit: 4,000 tokens
+- Warning threshold: 80%
+- Hard limit: 100%
+
+### Budget Enforcement
+
+When approaching limits:
+
+**80% (Warning):**
+- Log: "Agent approaching context limit"
+- Track for future optimization
+- May trigger context filtering
+
+**100% (Hard Limit):**
+- Force incremental summarization
+- Archive old context to long-term memory
+- Escalate to @context-manager
+- May delay execution pending compression
+
+### Monthly Cost Targets
+
+With current setup (47 agents on Sonnet):
+- **Baseline:** ~$1,058/month
+- **Phase 4 Target:** ~$298/month (72% reduction)
+- **Optimization levers:**
+  - Model reassignment (40% savings)
+  - Prompt optimization (20% savings)
+  - Context compression (80%+ effective)
+
+Monitor actual spend in `.claude/metrics/system.json`
 
 ---
 

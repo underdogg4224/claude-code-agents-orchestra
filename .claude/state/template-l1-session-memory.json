@@ -1,0 +1,247 @@
+{
+  "memory_tier": "L1",
+  "memory_type": "session_memory",
+  "session_id": "[PLACEHOLDER: session-id]",
+
+  "session_metadata": {
+    "started_at": "[ISO timestamp]",
+    "updated_at": "[ISO timestamp]",
+    "expected_duration_hours": 2,
+    "elapsed_minutes": 45,
+    "status": "active|completed|paused"
+  },
+
+  "mission": {
+    "mission_id": "[PLACEHOLDER: mission-id]",
+    "title": "Implement User Authentication",
+    "description": "Add OAuth2 authentication with JWT tokens",
+    "status": "in_progress",
+    "priority": "high",
+    "assigned_to_departments": [
+      "frontend",
+      "backend",
+      "security"
+    ]
+  },
+
+  "completed_tasks": [
+    {
+      "task_id": "T001",
+      "title": "Design authentication API contracts",
+      "assigned_to": "@api-architect",
+      "completed_at": "[ISO timestamp]",
+      "duration_minutes": 45,
+      "summary": "Designed OAuth2 endpoints: /auth/login, /auth/logout, /auth/refresh with JWT tokens",
+      "output_artifacts": [
+        "api/auth.routes.ts",
+        "api/auth.types.ts"
+      ],
+      "quality": "approved_first_review",
+      "tokens_used": 4200
+    },
+    {
+      "task_id": "T002",
+      "title": "Design database schema for authentication",
+      "assigned_to": "@database-optimizer",
+      "completed_at": "[ISO timestamp]",
+      "duration_minutes": 30,
+      "summary": "Created users table with secure password hashing, sessions table for token management",
+      "output_artifacts": [
+        "database/migrations/001_create_auth_tables.sql"
+      ],
+      "quality": "approved_first_review",
+      "tokens_used": 3100
+    }
+  ],
+
+  "active_tasks": [
+    {
+      "task_id": "T003",
+      "title": "Implement React login form",
+      "assigned_to": "@react-expert",
+      "started_at": "[ISO timestamp]",
+      "estimated_completion": "[ISO timestamp + 45 min]",
+      "status": "in_progress",
+      "progress_percent": 60,
+      "current_activity": "Adding email validation and error handling",
+      "artifacts_so_far": [
+        "src/components/LoginForm.tsx (150 LOC, 75% complete)"
+      ]
+    }
+  ],
+
+  "blocked_tasks": [],
+
+  "coordinator_assignments": {
+    "@frontend-coordinator": {
+      "responsibilities": "Manage LoginForm component implementation and accessibility",
+      "assigned_specialists": [
+        "@react-expert",
+        "@ui-ux-designer"
+      ],
+      "status": "active"
+    },
+    "@backend-coordinator": {
+      "responsibilities": "Manage API endpoint implementation",
+      "assigned_specialists": [
+        "@nodejs-expert",
+        "@database-optimizer"
+      ],
+      "status": "pending"
+    },
+    "@security-coordinator": {
+      "responsibilities": "Manage OAuth2 and JWT implementation",
+      "assigned_specialists": [
+        "@auth-expert"
+      ],
+      "status": "pending"
+    }
+  },
+
+  "modified_files": [
+    {
+      "path": "api/auth.routes.ts",
+      "status": "created",
+      "change_type": "new_file",
+      "lines_added": 75,
+      "tests_passing": true
+    },
+    {
+      "path": "src/components/LoginForm.tsx",
+      "status": "in_progress",
+      "change_type": "new_file",
+      "lines_added": 150,
+      "completeness_percent": 75
+    },
+    {
+      "path": "database/migrations/001_create_auth_tables.sql",
+      "status": "created",
+      "change_type": "new_file",
+      "lines_added": 45,
+      "migration_status": "tested_on_replica"
+    }
+  ],
+
+  "key_decisions": [
+    "OAuth2 with PKCE flow for security",
+    "JWT access tokens (1-hour expiry) + refresh tokens (7-day)",
+    "Passwords hashed with bcrypt",
+    "Session tokens stored in secure HTTP-only cookies",
+    "Backend validation required on all endpoints"
+  ],
+
+  "architectural_patterns": [
+    "MVC pattern for API routes",
+    "React hooks for form state management",
+    "Database connection pooling"
+  ],
+
+  "dependencies": [
+    {
+      "blocking_task": "T004",
+      "blocked_on": "T003",
+      "description": "T004 (write tests) depends on T003 (implementation) completion",
+      "status": "resolved"
+    }
+  ],
+
+  "team_communications": [
+    {
+      "timestamp": "[ISO timestamp]",
+      "between": "@frontend-coordinator and @react-expert",
+      "topic": "Form validation approach",
+      "decision": "Use React Hook Form library for form state"
+    }
+  ],
+
+  "token_usage": {
+    "total_tokens_input": 20000,
+    "total_tokens_output": 6500,
+    "total_tokens": 26500,
+    "total_cost_usd": 0.38,
+    "tokens_available": 32000,
+    "utilization_percent": 83,
+    "projected_compression_needed_at": 90
+  },
+
+  "quality_metrics": {
+    "tasks_passed_first_review": 2,
+    "tasks_requiring_rework": 0,
+    "test_pass_rate": 100,
+    "hallucination_incidents": 0,
+    "escalations": {
+      "level_1": 0,
+      "level_2": 0,
+      "level_3": 0,
+      "level_4": 0
+    }
+  },
+
+  "context_for_coordinators": [
+    {
+      "coordinator": "@frontend-coordinator",
+      "relevant_decisions": [
+        "Using OAuth2 with JWT",
+        "HTTP-only cookies for refresh tokens"
+      ],
+      "relevant_files": [
+        "src/components/LoginForm.tsx",
+        "api/auth.routes.ts"
+      ]
+    },
+    {
+      "coordinator": "@backend-coordinator",
+      "relevant_decisions": [
+        "Database schema with users + sessions tables",
+        "Bcrypt for password hashing"
+      ],
+      "relevant_files": [
+        "database/migrations/001_create_auth_tables.sql",
+        "api/auth.routes.ts"
+      ]
+    }
+  ],
+
+  "next_planned_tasks": [
+    {
+      "task_id": "T004",
+      "title": "Write unit tests for LoginForm",
+      "assigned_to": "@test-automator",
+      "estimated_duration": "30 minutes",
+      "blocked_by": "T003"
+    },
+    {
+      "task_id": "T005",
+      "title": "Implement OAuth2 endpoints",
+      "assigned_to": "@nodejs-expert",
+      "estimated_duration": "60 minutes"
+    }
+  ],
+
+  "open_questions": [
+    {
+      "question": "Should we implement rate limiting on login attempts?",
+      "asked_by": "@security-coordinator",
+      "status": "pending_decision"
+    }
+  ],
+
+  "risks_identified": [
+    {
+      "risk": "JWT token expiration might be too short",
+      "severity": "medium",
+      "mitigation": "Implement automatic refresh token rotation"
+    }
+  ],
+
+  "compression_history": [],
+
+  "session_summary": {
+    "start_task_count": 5,
+    "completed_task_count": 2,
+    "in_progress_task_count": 1,
+    "success_rate_percent": 100,
+    "average_task_duration_minutes": 38,
+    "estimated_total_session_duration_minutes": 180
+  }
+}

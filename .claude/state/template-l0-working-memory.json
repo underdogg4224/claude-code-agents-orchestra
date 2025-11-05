@@ -1,0 +1,123 @@
+{
+  "memory_tier": "L0",
+  "memory_type": "working_memory",
+  "session_id": "[PLACEHOLDER: session-id]",
+  "task_id": "[PLACEHOLDER: current-task-id]",
+
+  "metadata": {
+    "created_at": "[ISO timestamp]",
+    "updated_at": "[ISO timestamp]",
+    "expires_at": "[ISO timestamp - 1 hour from now]",
+    "status": "active|archived"
+  },
+
+  "current_context": {
+    "user_request": "[Original user request or current objective]",
+    "active_specialist": "@[specialist-name]",
+    "active_coordinator": "@[coordinator-name]",
+    "active_files": [
+      "[file1.ts - being edited]",
+      "[file2.tsx - being reviewed]"
+    ],
+    "current_step": "Implementing feature X step 2 of 5"
+  },
+
+  "progress": {
+    "step_number": 2,
+    "total_steps": 5,
+    "status": "in_progress|blocked|ready_for_review",
+    "completed_steps": [
+      "Component structure created",
+      "Props interface defined"
+    ],
+    "current_activity": "Implementing validation hooks",
+    "next_activity": "Add error handling",
+    "percent_complete": 40
+  },
+
+  "current_blockers": {
+    "exists": false,
+    "description": "[If blocked] What's preventing progress",
+    "escalation_level": 0,
+    "escalation_requested_at": null,
+    "escalation_to": null
+  },
+
+  "context_usage": {
+    "tokens_used": 3200,
+    "tokens_available": 8000,
+    "utilization_percent": 40,
+    "estimated_total_tokens_at_completion": 5500
+  },
+
+  "artifacts": {
+    "files_created": [
+      {
+        "path": "src/components/LoginForm.tsx",
+        "status": "in_progress",
+        "lines_of_code": 150,
+        "completeness_percent": 75
+      }
+    ],
+    "files_modified": [
+      {
+        "path": "src/types/auth.ts",
+        "changes": "Added AuthFormProps interface"
+      }
+    ],
+    "test_files": [
+      {
+        "path": "src/components/__tests__/LoginForm.test.tsx",
+        "status": "not_started"
+      }
+    ]
+  },
+
+  "recent_conversation": [
+    {
+      "timestamp": "[ISO timestamp]",
+      "actor": "@react-expert",
+      "action": "Created component structure",
+      "details": "BasicLoginForm component with useState hooks"
+    },
+    {
+      "timestamp": "[ISO timestamp]",
+      "actor": "@react-expert",
+      "action": "Added form validation",
+      "details": "Email and password validation with error states"
+    }
+  ],
+
+  "dependencies": {
+    "blocking_on": [],
+    "waiting_for": [
+      {
+        "task_id": "T001",
+        "description": "API endpoint validation",
+        "status": "complete"
+      }
+    ]
+  },
+
+  "decisions_made": [
+    "Using React Hook Form for form management",
+    "Storing validation errors in component state"
+  ],
+
+  "performance_metrics": {
+    "task_start_time": "[ISO timestamp]",
+    "elapsed_minutes": 25,
+    "estimated_completion_time": "35 minutes",
+    "compression_count": 0,
+    "last_compression_at": null
+  },
+
+  "next_steps": [
+    "Complete validation logic",
+    "Add error handling for API calls",
+    "Write unit tests",
+    "Run accessibility audit"
+  ],
+
+  "notes": "[Any additional context or observations]"
+}

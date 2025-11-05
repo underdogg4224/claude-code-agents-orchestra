@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(find:*)",
+      "Bash(awk 'BEGIN{RS=\"\"\"\"agents/\"\"\"\"; OFS=\"\"\"\"|\"\"\"\"} {print}')",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(dir:*)",
+      "Bash(paste:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
