@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent-message version="1.0" xmlns="http://agent-orchestra.local/protocol/1.0">
+  <header>
+    <message-id>950e8400-e29b-41d4-a716-446655440050</message-id>
+    <timestamp>2025-11-05T17:30:00Z</timestamp>
+    <sender>
+      <agent-name>react-expert</agent-name>
+      <agent-role>specialist</agent-role>
+      <tier>sonnet</tier>
+    </sender>
+    <recipient>
+      <agent-name>frontend-coordinator</agent-name>
+      <agent-role>coordinator</agent-role>
+      <tier>sonnet</tier>
+    </recipient>
+    <correlation-id>550e8400-e29b-41d4-a716-446655440001</correlation-id>
+    <conversation-chain>
+      <message-ref index="0">550e8400-e29b-41d4-a716-446655440000</message-ref>
+      <message-ref index="1">650e8400-e29b-41d4-a716-446655440010</message-ref>
+      <message-ref index="2">850e8400-e29b-41d4-a716-446655440030</message-ref>
+    </conversation-chain>
+    <priority>high</priority>
+    <expiration>2025-11-05T19:30:00Z</expiration>
+  </header>
+
+  <body type="query">
+    <query-type>ask-for-help</query-type>
+    <subject>Need guidance on handling intermittent API failures in form validation</subject>
+
+    <context>
+      <problem>Email validation API endpoint (/api/auth/check-email) is returning HTTP 500 errors intermittently during development. This is blocking the UserRegistrationForm component from completing full form validation testing. Current approach is to use mock validation, but I want to ensure we handle real API failures gracefully in production.</problem>
+
+      <attempted-solutions>
+        <attempt order="1">Implemented retry logic with exponential backoff, but still getting failures after 3 attempts.</attempt>
+        <attempt order="2">Added timeout handling - if validation takes &gt;5 seconds, fall back to mock response. This works but may hide real issues.</attempt>
+        <attempt order="3">Checked backend status - they report the endpoint is under investigation. Implemented local mock as temporary workaround.</attempt>
+      </attempted-solutions>
+
+      <file-reference path="src/hooks/useUserRegistration.ts">The validation hook where API call is made (lines 85-110)</file-reference>
+      <file-reference path="src/components/forms/UserRegistrationForm.tsx">The form component calling validation (lines 150-170)</file-reference>
+
+      <error-message>POST /api/auth/check-email HTTP 500 Internal Server Error
+Response: {&quot;error&quot;: &quot;Database connection timeout&quot;, &quot;requestId&quot;: &quot;req-12345&quot;}
+
+This error occurs approximately 30% of the time during testing.</error-message>
+    </context>
+
+    <urgency>high</urgency>
+    <required-by>2025-11-05T18:00:00Z</required-by>
+  </body>
+
+  <signature>
+    <algorithm>RSA-SHA256</algorithm>
+    <signer>react-expert</signer>
+    <timestamp>2025-11-05T17:30:00Z</timestamp>
+    <public-key-id>re-key-20251105-001</public-key-id>
+    <signature-value>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7VJTUt9Us8cKjMzEfYyjiWA4/opRRfg+DPQc15WyKLbHczQfHTT...</signature-value>
+  </signature>
+</agent-message>

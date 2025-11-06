@@ -1,0 +1,663 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://agent-orchestra.local/protocol/1.0"
+           xmlns:tns="http://agent-orchestra.local/protocol/1.0"
+           elementFormDefault="qualified">
+
+  <!-- ============================================================================ -->
+  <!-- ROOT MESSAGE ELEMENT -->
+  <!-- ============================================================================ -->
+
+  <xs:element name="agent-message" type="tns:AgentMessageType">
+    <xs:annotation>
+      <xs:documentation>Root element for inter-agent communication messages</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="AgentMessageType">
+    <xs:sequence>
+      <xs:element name="header" type="tns:HeaderType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="body" type="tns:BodyType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="signature" type="tns:SignatureType" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:string" use="required" fixed="1.0"/>
+  </xs:complexType>
+
+  <!-- ============================================================================ -->
+  <!-- HEADER ELEMENT -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="HeaderType">
+    <xs:sequence>
+      <xs:element name="message-id" type="tns:UUIDType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="sender" type="tns:AgentRefType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="recipient" type="tns:AgentRefType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="correlation-id" type="tns:UUIDType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="conversation-chain" type="tns:ConversationChainType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="priority" type="tns:PriorityType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="expiration" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="retry-policy" type="tns:RetryPolicyType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ============================================================================ -->
+  <!-- AGENT REFERENCE ELEMENT -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="AgentRefType">
+    <xs:sequence>
+      <xs:element name="agent-name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="agent-role" type="tns:AgentRoleType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="tier" type="tns:TierType" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="AgentRoleType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="coordinator"/>
+      <xs:enumeration value="specialist"/>
+      <xs:enumeration value="orchestrator"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TierType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="opus"/>
+      <xs:enumeration value="sonnet"/>
+      <xs:enumeration value="haiku"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ============================================================================ -->
+  <!-- CONVERSATION CHAIN ELEMENT -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="ConversationChainType">
+    <xs:sequence>
+      <xs:element name="message-ref" type="tns:MessageRefType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MessageRefType">
+    <xs:simpleContent>
+      <xs:extension base="tns:UUIDType">
+        <xs:attribute name="index" type="xs:integer" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- ============================================================================ -->
+  <!-- PRIORITY AND RETRY POLICY ELEMENTS -->
+  <!-- ============================================================================ -->
+
+  <xs:simpleType name="PriorityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="critical"/>
+      <xs:enumeration value="high"/>
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="low"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="RetryPolicyType">
+    <xs:sequence>
+      <xs:element name="max-attempts" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="backoff-strategy" type="tns:BackoffStrategyType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="timeout-seconds" type="xs:positiveInteger" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="BackoffStrategyType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="exponential"/>
+      <xs:enumeration value="linear"/>
+      <xs:enumeration value="fixed"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ============================================================================ -->
+  <!-- BODY ELEMENT (POLYMORPHIC) -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="BodyType">
+    <xs:choice>
+      <xs:element name="task-delegation" type="tns:TaskDelegationType"/>
+      <xs:element name="status-update" type="tns:StatusUpdateType"/>
+      <xs:element name="task-completion" type="tns:TaskCompletionType"/>
+      <xs:element name="error" type="tns:ErrorType"/>
+      <xs:element name="query" type="tns:QueryType"/>
+    </xs:choice>
+    <xs:attribute name="type" type="tns:BodyTypeEnum" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="BodyTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="task-delegation"/>
+      <xs:enumeration value="status-update"/>
+      <xs:enumeration value="task-completion"/>
+      <xs:enumeration value="error"/>
+      <xs:enumeration value="query"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ============================================================================ -->
+  <!-- TASK DELEGATION BODY TYPE -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="TaskDelegationType">
+    <xs:sequence>
+      <xs:element name="task" type="tns:TaskType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="assignment" type="tns:AssignmentType" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TaskType">
+    <xs:sequence>
+      <xs:element name="task-id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="task-type" type="tns:TaskTypeEnum" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="title" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="objectives" type="tns:ObjectivesType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="acceptance-criteria" type="tns:CriteriaType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="estimated-effort-hours" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="dependencies" type="tns:DependenciesType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="context" type="tns:ContextType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="expected-outputs" type="tns:ExpectedOutputsType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="success-criteria" type="tns:SuccessCriteriaType" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="TaskTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="feature-development"/>
+      <xs:enumeration value="bug-fix"/>
+      <xs:enumeration value="refactoring"/>
+      <xs:enumeration value="testing"/>
+      <xs:enumeration value="review"/>
+      <xs:enumeration value="documentation"/>
+      <xs:enumeration value="optimization"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ObjectivesType">
+    <xs:sequence>
+      <xs:element name="objective" type="tns:PrioritizedItemType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PrioritizedItemType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="priority" type="xs:positiveInteger" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="CriteriaType">
+    <xs:sequence>
+      <xs:element name="criterion" type="tns:MeasurableCriterionType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MeasurableCriterionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="measurable" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="DependenciesType">
+    <xs:sequence>
+      <xs:element name="dependency" type="tns:DependencyType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DependencyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" type="tns:DependencyTypeEnum" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="DependencyTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="blocks-on"/>
+      <xs:enumeration value="depends-on"/>
+      <xs:enumeration value="related-to"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ContextType">
+    <xs:sequence>
+      <xs:element name="file-reference" type="tns:FileRefType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="api-contract" type="tns:ApiContractType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="constraint" type="tns:ConstraintType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FileRefType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="path" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ApiContractType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="endpoint" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ConstraintType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ExpectedOutputsType">
+    <xs:sequence>
+      <xs:element name="output" type="tns:OutputType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OutputType">
+    <xs:sequence>
+      <xs:element name="file-path" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="tns:OutputTypeEnum" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="OutputTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="code-files"/>
+      <xs:enumeration value="test-files"/>
+      <xs:enumeration value="documentation"/>
+      <xs:enumeration value="configuration"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="SuccessCriteriaType">
+    <xs:sequence>
+      <xs:element name="metric" type="tns:MetricType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MetricType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="AssignmentType">
+    <xs:sequence>
+      <xs:element name="assigned-to" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="assigned-by" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="assigned-timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ============================================================================ -->
+  <!-- STATUS UPDATE BODY TYPE -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="StatusUpdateType">
+    <xs:sequence>
+      <xs:element name="task-id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="status" type="tns:StatusEnum" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="progress-percentage" type="tns:PercentageType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="current-activity" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="blockers" type="tns:BlockersType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="artifacts-created" type="tns:ArtifactsType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="metrics" type="tns:MetricsType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="next-steps" type="tns:StepsType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="StatusEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="in-progress"/>
+      <xs:enumeration value="blocked"/>
+      <xs:enumeration value="completed"/>
+      <xs:enumeration value="failed"/>
+      <xs:enumeration value="pending"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PercentageType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="BlockersType">
+    <xs:sequence>
+      <xs:element name="blocker" type="tns:BlockerType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BlockerType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="severity" type="tns:SeverityType" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="SeverityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="critical"/>
+      <xs:enumeration value="warning"/>
+      <xs:enumeration value="info"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ArtifactsType">
+    <xs:sequence>
+      <xs:element name="artifact" type="tns:ArtifactType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ArtifactType">
+    <xs:sequence>
+      <xs:element name="file-path" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="lines-of-code" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="tests-added" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="checksum" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="tns:ArtifactTypeEnum" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="ArtifactTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="code"/>
+      <xs:enumeration value="test"/>
+      <xs:enumeration value="documentation"/>
+      <xs:enumeration value="configuration"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="MetricsType">
+    <xs:sequence>
+      <xs:element name="metric" type="tns:MetricType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StepsType">
+    <xs:sequence>
+      <xs:element name="step" type="tns:StepType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StepType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="order" type="xs:positiveInteger" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- ============================================================================ -->
+  <!-- TASK COMPLETION BODY TYPE -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="TaskCompletionType">
+    <xs:sequence>
+      <xs:element name="task-id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="status" type="tns:CompletionStatusEnum" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="summary" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="completion-timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="total-hours-worked" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="acceptance-criteria-met" type="tns:CriteriaMetType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="deliverables" type="tns:DeliverablesType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="quality-metrics" type="tns:QualityMetricsType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="recommendations" type="tns:RecommendationsType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="CompletionStatusEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="success"/>
+      <xs:enumeration value="partial-success"/>
+      <xs:enumeration value="failed"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="CriteriaMetType">
+    <xs:sequence>
+      <xs:element name="criterion" type="tns:CriterionResultType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CriterionResultType">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="met" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="evidence" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="reason" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DeliverablesType">
+    <xs:sequence>
+      <xs:element name="deliverable" type="tns:DeliverableType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DeliverableType">
+    <xs:sequence>
+      <xs:element name="files" type="tns:FilesType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="test-coverage" type="tns:PercentageType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="all-tests-passing" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="tns:DeliverableTypeEnum" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="DeliverableTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="code"/>
+      <xs:enumeration value="documentation"/>
+      <xs:enumeration value="tests"/>
+      <xs:enumeration value="configuration"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="FilesType">
+    <xs:sequence>
+      <xs:element name="file" type="tns:FileStatusType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FileStatusType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="path" type="xs:string" use="required"/>
+        <xs:attribute name="status" type="tns:FileStatusEnum" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="FileStatusEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="created"/>
+      <xs:enumeration value="modified"/>
+      <xs:enumeration value="deleted"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="QualityMetricsType">
+    <xs:sequence>
+      <xs:element name="metric" type="tns:BooleanMetricType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BooleanMetricType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="RecommendationsType">
+    <xs:sequence>
+      <xs:element name="recommendation" type="tns:RecommendationType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RecommendationType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" type="tns:RecommendationTypeEnum" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="RecommendationTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="follow-up"/>
+      <xs:enumeration value="technical-debt"/>
+      <xs:enumeration value="optimization"/>
+      <xs:enumeration value="refactoring"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ============================================================================ -->
+  <!-- ERROR BODY TYPE -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="ErrorType">
+    <xs:sequence>
+      <xs:element name="error-id" type="tns:UUIDType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="error-type" type="tns:ErrorTypeEnum" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="severity" type="tns:SeverityType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="details" type="tns:ErrorDetailsType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="recovery-options" type="tns:RecoveryOptionsType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="recommended-action" type="tns:RecoveryActionEnum" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="ErrorTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="task-failed"/>
+      <xs:enumeration value="timeout"/>
+      <xs:enumeration value="blocked"/>
+      <xs:enumeration value="validation-error"/>
+      <xs:enumeration value="system-error"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ErrorDetailsType">
+    <xs:sequence>
+      <xs:element name="stack-trace" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="context-data" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RecoveryOptionsType">
+    <xs:sequence>
+      <xs:element name="option" type="tns:RecoveryOptionType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RecoveryOptionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="priority" type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="type" type="tns:RecoveryActionEnum" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="RecoveryActionEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="escalate"/>
+      <xs:enumeration value="retry"/>
+      <xs:enumeration value="abandon"/>
+      <xs:enumeration value="alternate"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ============================================================================ -->
+  <!-- QUERY BODY TYPE -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="QueryType">
+    <xs:sequence>
+      <xs:element name="query-type" type="tns:QueryTypeEnum" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="subject" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="context" type="tns:QueryContextType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="urgency" type="tns:PriorityType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="required-by" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="QueryTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ask-for-help"/>
+      <xs:enumeration value="request-review"/>
+      <xs:enumeration value="request-analysis"/>
+      <xs:enumeration value="get-status"/>
+      <xs:enumeration value="request-guidance"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="QueryContextType">
+    <xs:sequence>
+      <xs:element name="problem" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="attempted-solutions" type="tns:AttemptedSolutionsType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="file-reference" type="tns:FileRefType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="error-message" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AttemptedSolutionsType">
+    <xs:sequence>
+      <xs:element name="attempt" type="tns:AttemptType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AttemptType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="order" type="xs:positiveInteger" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- ============================================================================ -->
+  <!-- SIGNATURE ELEMENT -->
+  <!-- ============================================================================ -->
+
+  <xs:complexType name="SignatureType">
+    <xs:sequence>
+      <xs:element name="algorithm" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="signer" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="public-key-id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="signature-value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ============================================================================ -->
+  <!-- UTILITY TYPES -->
+  <!-- ============================================================================ -->
+
+  <xs:simpleType name="UUIDType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

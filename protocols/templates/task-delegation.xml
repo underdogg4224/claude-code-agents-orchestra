@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent-message version="1.0" xmlns="http://agent-orchestra.local/protocol/1.0">
+  <header>
+    <message-id>550e8400-e29b-41d4-a716-446655440000</message-id>
+    <timestamp>2025-11-05T14:30:00Z</timestamp>
+    <sender>
+      <agent-name>frontend-coordinator</agent-name>
+      <agent-role>coordinator</agent-role>
+      <tier>sonnet</tier>
+    </sender>
+    <recipient>
+      <agent-name>react-expert</agent-name>
+      <agent-role>specialist</agent-role>
+      <tier>sonnet</tier>
+    </recipient>
+    <correlation-id>550e8400-e29b-41d4-a716-446655440001</correlation-id>
+    <conversation-chain>
+      <message-ref index="0">550e8400-e29b-41d4-a716-446655440002</message-ref>
+    </conversation-chain>
+    <priority>high</priority>
+    <expiration>2025-11-05T19:30:00Z</expiration>
+    <retry-policy>
+      <max-attempts>3</max-attempts>
+      <backoff-strategy>exponential</backoff-strategy>
+      <timeout-seconds>300</timeout-seconds>
+    </retry-policy>
+  </header>
+
+  <body type="task-delegation">
+    <task>
+      <task-id>task-react-form-component-001</task-id>
+      <task-type>feature-development</task-type>
+      <title>Implement User Registration Form Component</title>
+      <description>Build a React component for user registration with email validation, password strength checking, and form state management using React Hook Form</description>
+
+      <objectives>
+        <objective priority="1">Create reusable UserRegistrationForm component</objective>
+        <objective priority="2">Implement email validation with async API check</objective>
+        <objective priority="3">Add password strength meter and requirements display</objective>
+      </objectives>
+
+      <acceptance-criteria>
+        <criterion measurable="true">Component renders without errors</criterion>
+        <criterion measurable="true">All form validations work correctly</criterion>
+        <criterion measurable="true">Async email validation API call succeeds</criterion>
+        <criterion measurable="true">Form submission sends data to backend API</criterion>
+        <criterion measurable="true">Component is fully TypeScript typed</criterion>
+      </acceptance-criteria>
+
+      <estimated-effort-hours>6.5</estimated-effort-hours>
+
+      <dependencies>
+        <dependency type="depends-on">task-api-registration-endpoint-002</dependency>
+        <dependency type="related-to">task-ui-design-forms-003</dependency>
+      </dependencies>
+
+      <context>
+        <file-reference path="src/components/forms/UserRegistrationForm.tsx">Component should go here</file-reference>
+        <file-reference path="src/types/auth.ts">Auth types and interfaces</file-reference>
+        <api-contract endpoint="POST /api/auth/register">User registration endpoint</api-contract>
+        <api-contract endpoint="GET /api/auth/check-email">Email availability check</api-contract>
+        <constraint type="performance">Form validation should complete within 100ms</constraint>
+        <constraint type="accessibility">Must meet WCAG 2.1 AA standards</constraint>
+      </context>
+
+      <expected-outputs>
+        <output type="code-files">
+          <file-path>src/components/forms/UserRegistrationForm.tsx</file-path>
+          <file-path>src/components/forms/PasswordStrengthMeter.tsx</file-path>
+          <file-path>src/hooks/useUserRegistration.ts</file-path>
+        </output>
+        <output type="test-files">
+          <file-path>src/components/forms/UserRegistrationForm.test.tsx</file-path>
+          <file-path>src/hooks/useUserRegistration.test.ts</file-path>
+        </output>
+        <output type="documentation">
+          <file-path>docs/components/UserRegistrationForm.md</file-path>
+        </output>
+      </expected-outputs>
+
+      <success-criteria>
+        <metric name="test-coverage">&gt;=85%</metric>
+        <metric name="type-errors">0</metric>
+        <metric name="lint-errors">0</metric>
+        <metric name="accessibility-violations">0</metric>
+      </success-criteria>
+    </task>
+
+    <assignment>
+      <assigned-to>react-expert</assigned-to>
+      <assigned-by>frontend-coordinator</assigned-by>
+      <assigned-timestamp>2025-11-05T14:30:00Z</assigned-timestamp>
+    </assignment>
+  </body>
+
+  <signature>
+    <algorithm>RSA-SHA256</algorithm>
+    <signer>frontend-coordinator</signer>
+    <timestamp>2025-11-05T14:30:00Z</timestamp>
+    <public-key-id>fc-key-20251105-001</public-key-id>
+    <signature-value>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7VJTUt9Us8cKjMzEfYyjiWA4/opRRfg+DPQc15WyKLbHczQfHTT...</signature-value>
+  </signature>
+</agent-message>

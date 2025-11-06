@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent-message version="1.0" xmlns="http://agent-orchestra.local/protocol/1.0">
+  <header>
+    <message-id>850e8400-e29b-41d4-a716-446655440030</message-id>
+    <timestamp>2025-11-05T17:15:00Z</timestamp>
+    <sender>
+      <agent-name>react-expert</agent-name>
+      <agent-role>specialist</agent-role>
+      <tier>sonnet</tier>
+    </sender>
+    <recipient>
+      <agent-name>frontend-coordinator</agent-name>
+      <agent-role>coordinator</agent-role>
+      <tier>sonnet</tier>
+    </recipient>
+    <correlation-id>550e8400-e29b-41d4-a716-446655440001</correlation-id>
+    <conversation-chain>
+      <message-ref index="0">550e8400-e29b-41d4-a716-446655440000</message-ref>
+      <message-ref index="1">650e8400-e29b-41d4-a716-446655440010</message-ref>
+    </conversation-chain>
+    <priority>critical</priority>
+    <expiration>2025-11-05T17:45:00Z</expiration>
+    <retry-policy>
+      <max-attempts>3</max-attempts>
+      <backoff-strategy>exponential</backoff-strategy>
+      <timeout-seconds>30</timeout-seconds>
+    </retry-policy>
+  </header>
+
+  <body type="error">
+    <error-id>560e8400-e29b-41d4-a716-446655440040</error-id>
+    <error-type>task-failed</error-type>
+    <severity>warning</severity>
+    <message>Email validation API endpoint returning HTTP 500 errors. Unable to verify email availability during form submission.</message>
+
+    <details>
+      <stack-trace>Error: HTTP 500 from POST /api/auth/check-email
+  at validateEmailAvailability (src/hooks/useUserRegistration.ts:87:15)
+  at processRequest (src/hooks/useUserRegistration.ts:142:28)
+  at handleSubmit (src/components/forms/UserRegistrationForm.tsx:156:18)
+  at onSubmit (react-hook-form:internal)
+  at HTMLFormElement.submit (native)</stack-trace>
+      <context-data>{
+  "endpoint": "POST /api/auth/check-email",
+  "statusCode": 500,
+  "email": "user@example.com",
+  "attempts": 2,
+  "lastErrorTime": "2025-11-05T17:15:00Z",
+  "backendStatus": "investigating"
+}</context-data>
+    </details>
+
+    <recovery-options>
+      <option priority="1" type="alternate">Use mock validation response that always returns email as available. User can be notified during registration that duplicate emails will be caught during backend validation.</option>
+      <option priority="2" type="escalate">Escalate to backend-coordinator to investigate API endpoint issues and determine estimated recovery time.</option>
+      <option priority="3" type="retry">Retry email validation with exponential backoff. Implement 5-second timeout before falling back to mock response.</option>
+    </recovery-options>
+
+    <recommended-action>alternate</recommended-action>
+  </body>
+
+  <signature>
+    <algorithm>RSA-SHA256</algorithm>
+    <signer>react-expert</signer>
+    <timestamp>2025-11-05T17:15:00Z</timestamp>
+    <public-key-id>re-key-20251105-001</public-key-id>
+    <signature-value>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7VJTUt9Us8cKjMzEfYyjiWA4/opRRfg+DPQc15WyKLbHczQfHTT...</signature-value>
+  </signature>
+</agent-message>
