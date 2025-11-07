@@ -1,0 +1,36 @@
+{
+  "name": "claude-code-agents-orchestra",
+  "version": "1.0.0",
+  "description": "Agent Orchestra XML Protocol Implementation",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint . --ext .ts"
+  },
+  "keywords": [
+    "agent-orchestra",
+    "xml-protocol",
+    "message-routing"
+  ],
+  "author": "Claude Agent Orchestra",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.19",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.10",
+    "better-sqlite3": "^9.4.1",
+    "fast-xml-parser": "^4.3.5"
+  }
+}

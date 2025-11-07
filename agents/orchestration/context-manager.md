@@ -1,7 +1,7 @@
 ---
 name: context-manager
 description: Manages context across multiple agents and long-running tasks, ensuring seamless collaboration and preventing loss of information.
-model: sonnet
+model: opus
 ---
 
 # Context Manager

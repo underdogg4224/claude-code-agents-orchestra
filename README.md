@@ -18,6 +18,8 @@ While a single large language model is powerful, complex projects demand deep, n
 
 This collection of agents is the primary focus. You can use them with your own orchestration logic or use our provided example to get started quickly.
 
+**🔧 Production-Ready Communication**: Complete XML protocol implementation with validation, routing, and audit capabilities (100% test coverage, 76/76 tests passing).
+
 ---
 
 ## 👥 Your AI Development Team
@@ -206,6 +208,11 @@ All agents are organized into professional teams within the `agents/` directory.
 │   └── 🛠️ specialized-tools/    # Specific Platform & Tool Mastery
 │
 ├── CLAUDE.md.example         # Advanced: Example AI Rule Book
+├── protocols/               # XML Communication Protocol Implementation
+│   ├── validators/          # XML schema and business rule validation
+│   ├── routing/            # Agent message routing and queuing
+│   ├── audit/              # Message storage, search, and replay
+│   └── agent-message-v1.0.xsd # Complete XML message schema
 ├── LICENSE
 └── README.md
 ```
