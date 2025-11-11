@@ -1,0 +1,214 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User accounts with authentication info
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  company          Company?
+  intakeResponses  IntakeResponse[]
+  bookings         Booking[]
+  payments         Payment[]
+  emailLogs        EmailLog[]
+
+  @@index([email])
+}
+
+// Company information
+model Company {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  name           String
+  industry       String
+  subSegment     String?
+  size           String   // e.g., "1-10", "11-50", "51-200", "201-500", "500+"
+  annualRevenue  Float?
+  website        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user                    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  processInventories      ProcessInventory[]
+  aiMaturityAssessments   AIMaturityAssessment[]
+
+  @@index([userId])
+}
+
+// Multi-step intake form submissions
+model IntakeResponse {
+  id          String    @id @default(cuid())
+  userId      String
+  sessionId   String    @unique
+  step        Int       // 1-4 for the four form steps
+  data        Json      // Stores the form data for this step
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+}
+
+// Specific processes being assessed
+model ProcessInventory {
+  id           String   @id @default(cuid())
+  companyId    String
+  processName  String   // e.g., "RFI Management", "Invoice Processing"
+  currentState String   // Description of current state
+  painPoints   String[] // Array of pain points
+  hoursPerWeek Float    // Time spent on this process
+  errorRate    Float?   // Estimated error rate (0-100)
+  toolsUsed    String[] // Current tools being used
+  priority     String   // "High", "Medium", "Low"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+// AI maturity scoring (0-4)
+model AIMaturityAssessment {
+  id              String   @id @default(cuid())
+  companyId       String
+  maturityLevel   Int      // 0-4
+  dimensions      Json     // Detailed breakdown by dimension
+  strengths       String[] // Identified strengths
+  gaps            String[] // Identified gaps
+  recommendations String[] // High-level recommendations
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  company         Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  coiCalculations CoiCalculation[]
+  quickWins       QuickWin[]
+
+  @@index([companyId])
+}
+
+// Cost of Inefficiency calculations
+model CoiCalculation {
+  id              String   @id @default(cuid())
+  assessmentId    String
+  totalMonthly    Float    // Total monthly COI in dollars
+  breakdown       Json     // Breakdown by process/category
+  assumptions     Json     // Assumptions used in calculation
+  confidenceBand  Json     // Low, mid, high estimates
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  assessment AIMaturityAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+}
+
+// Recommended quick wins
+model QuickWin {
+  id                   String   @id @default(cuid())
+  assessmentId         String
+  name                 String
+  type                 String   // e.g., "Automation", "Integration", "Process Optimization"
+  process              String   // Related process
+  estimatedSavings     Float    // Monthly savings estimate in dollars
+  implementationTime   String   // e.g., "1-2 weeks", "1 month"
+  complexity           String   // "Low", "Medium", "High"
+  priority             Int      // 1-5, 1 being highest priority
+  toolSuggestions      String[] // Recommended tools
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // Relations
+  assessment AIMaturityAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([priority])
+}
+
+// Quick Strike Audit bookings (Cal.com integration)
+model Booking {
+  id          String    @id @default(cuid())
+  userId      String
+  calEventId  String    @unique // Cal.com event ID
+  scheduledAt DateTime  // When the meeting is scheduled
+  duration    Int       // Duration in minutes
+  type        String    // e.g., "Quick Strike Audit", "Follow-up"
+  status      String    // "scheduled", "completed", "cancelled", "no-show"
+  meetingUrl  String?   // Video call URL
+  notes       String?   // Any notes about the booking
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payment Payment?
+
+  @@index([userId])
+  @@index([calEventId])
+  @@index([scheduledAt])
+}
+
+// Stripe payment records
+model Payment {
+  id               String    @id @default(cuid())
+  userId           String
+  bookingId        String?   @unique // Optional link to booking
+  stripeSessionId  String    @unique
+  amount           Float     // Amount in cents
+  currency         String    @default("usd")
+  status           String    // "pending", "succeeded", "failed", "refunded"
+  receiptUrl       String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking Booking? @relation(fields: [bookingId], references: [id])
+
+  @@index([userId])
+  @@index([stripeSessionId])
+  @@index([status])
+}
+
+// Email automation tracking
+model EmailLog {
+  id           String   @id @default(cuid())
+  userId       String
+  templateType String   // e.g., "welcome", "assessment_complete", "booking_confirmation"
+  subject      String
+  sentAt       DateTime @default(now())
+  status       String   // "sent", "delivered", "failed", "bounced"
+  metadata     Json?    // Additional metadata (recipient, tracking info, etc.)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([templateType])
+  @@index([sentAt])
+}

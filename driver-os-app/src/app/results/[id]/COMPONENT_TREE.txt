@@ -1,0 +1,225 @@
+Results Page Component Tree
+============================
+
+/results/[id]/page.tsx (Main Entry Point)
+│
+├─── Layout Container (min-h-screen, gradient background)
+│    │
+│    ├─── Header Section
+│    │    ├─── H1: "Your AI Quick Wins Report" (gradient text)
+│    │    └─── Company Info (name + industry)
+│    │
+│    ├─── <CoiDisplay coi={results.coi} />
+│    │    │
+│    │    ├─── Card Header
+│    │    │    ├─── AlertCircle Icon
+│    │    │    ├─── Badge: "Opportunity Identified"
+│    │    │    └─── Title: "Cost of Inefficiency"
+│    │    │
+│    │    └─── Card Content
+│    │         ├─── Big Number Display
+│    │         │    ├─── Monthly COI (7xl font)
+│    │         │    └─── Annual Projection
+│    │         │
+│    │         ├─── Confidence Band Section
+│    │         │    ├─── Low/Medium/High Values
+│    │         │    └─── Progress Bar (60% width)
+│    │         │
+│    │         └─── Top Cost Drivers (Top 3)
+│    │              └─── For Each: Name, Hours Wasted, Cost
+│    │
+│    ├─── <MaturityLevel level={results.maturityLevel} />
+│    │    │
+│    │    ├─── Card Header
+│    │    │    ├─── Title: "AI Maturity Level"
+│    │    │    └─── Badge: Level Label (colored)
+│    │    │
+│    │    └─── Card Content
+│    │         ├─── Progress Display
+│    │         │    ├─── "Level X of 4"
+│    │         │    ├─── Percentage
+│    │         │    └─── Progress Bar Component
+│    │         │
+│    │         ├─── Description Text
+│    │         │
+│    │         └─── Level Indicators Grid (5 columns)
+│    │              └─── For Each Level: Box with current highlight
+│    │
+│    ├─── Quick Wins Section
+│    │    │
+│    │    ├─── H2: "Your Top Quick Wins"
+│    │    │
+│    │    └─── Grid (md:2 cols, lg:3 cols)
+│    │         │
+│    │         └─── For Top 3: <QuickWinsCard win={win} rank={index} />
+│    │              │
+│    │              ├─── Card Header
+│    │              │    ├─── Rank Badge (#1, #2, #3)
+│    │              │    ├─── Complexity Badge (colored)
+│    │              │    ├─── Win Name (title)
+│    │              │    └─── Win Type (description)
+│    │              │
+│    │              └─── Card Content
+│    │                   ├─── Savings Display (green box)
+│    │                   │    ├─── TrendingUp Icon
+│    │                   │    ├─── Label
+│    │                   │    └─── Amount (3xl font, green)
+│    │                   │
+│    │                   ├─── Implementation Time (Clock icon)
+│    │                   │
+│    │                   └─── Type Badge (Zap icon)
+│    │
+│    ├─── CTA Section Card (gradient blue to violet)
+│    │    │
+│    │    ├─── Card Header
+│    │    │    ├─── Title: "Ready to Capture These Savings?"
+│    │    │    └─── Description: "Book a Quick Strike Audit..."
+│    │    │
+│    │    └─── Card Content
+│    │         ├─── Button Group (flex-row on desktop, flex-col on mobile)
+│    │         │    ├─── Primary Button: "Book Quick Strike Audit"
+│    │         │    └─── Secondary Button: "Download Full Report"
+│    │         │
+│    │         └─── Trust Builder Text
+│    │              "$1,500 fixed fee • Money-back guarantee"
+│    │
+│    └─── Complete Quick Wins List Card
+│         │
+│         ├─── Card Header
+│         │    ├─── Title: "All Quick Win Opportunities"
+│         │    └─── Description: "Complete breakdown..."
+│         │
+│         └─── Card Content
+│              └─── For All Quick Wins:
+│                   ├─── Rank + Name
+│                   ├─── Type
+│                   ├─── Savings (right aligned, green)
+│                   └─── Implementation Time
+│
+│
+├─── Alternative Variants (Not Rendered by Default)
+│    │
+│    ├─── variants/variant-b.tsx (Ops Efficiency Focus)
+│    │    │
+│    │    ├─── Time Savings Hero
+│    │    │    ├─── Hours Wasted (big number)
+│    │    │    ├─── FTE Calculation
+│    │    │    ├─── "What Team Could Do Instead" List
+│    │    │    └─── Top Time Wasters
+│    │    │
+│    │    └─── CTA: "Book Efficiency Audit"
+│    │
+│    └─── variants/variant-c.tsx (Growth/Revenue Focus)
+│         │
+│         ├─── Growth Potential Hero
+│         │    ├─── Revenue Impact (big number, 2.5x multiplier)
+│         │    ├─── "What Growth Capital Could Fund" Grid
+│         │    │    ├─── Market Expansion
+│         │    │    ├─── Sales Team Growth
+│         │    │    ├─── Marketing Campaigns
+│         │    │    └─── Product Innovation
+│         │    │
+│         │    └─── "Capital Currently Trapped In" List
+│         │
+│         ├─── CTA: "Book Growth Strategy Session"
+│         │
+│         └─── Case Studies Card
+│              ├─── SaaS Company Example
+│              └─── Professional Services Example
+│
+│
+├─── Supporting Components (Not Directly Rendered in Main Flow)
+│    │
+│    └─── components/ConfidenceBand.tsx (Standalone Component)
+│         │
+│         ├─── Card Header
+│         │    ├─── Info Icon
+│         │    └─── Title: "Confidence Range"
+│         │
+│         └─── Card Content
+│              ├─── Range Display
+│              │    ├─── Conservative (green)
+│              │    ├─── Expected (blue)
+│              │    └─── Optimistic (orange)
+│              │
+│              ├─── Visual Gradient Band
+│              │    └─── Current Estimate Marker
+│              │
+│              ├─── Methodology Explanation Box
+│              │    ├─── Conservative: 20th percentile
+│              │    ├─── Expected: 50th percentile
+│              │    └─── Optimistic: 80th percentile
+│              │
+│              └─── Confidence Level Badge
+│
+│
+├─── Error States
+│    │
+│    ├─── loading.tsx (Loading Skeleton)
+│    │    │
+│    │    └─── Skeleton Structure
+│    │         ├─── Header Skeleton (2 bars)
+│    │         ├─── COI Card Skeleton
+│    │         ├─── Maturity Card Skeleton
+│    │         ├─── Quick Wins Grid Skeleton (3 cards)
+│    │         └─── CTA Skeleton
+│    │
+│    └─── not-found.tsx (404 Page)
+│         │
+│         └─── Card
+│              ├─── AlertCircle Icon (red)
+│              ├─── Title: "Results Not Found"
+│              ├─── Description
+│              ├─── Explanation Text
+│              └─── Button Group
+│                   ├─── "Start New Assessment"
+│                   └─── "Return to Home"
+│
+│
+└─── Data Flow
+     │
+     ├─── Server-Side Fetch: getResults(id)
+     │    │
+     │    └─── GET /api/results/[id]
+     │         │
+     │         └─── Returns:
+     │              ├─── company { name, industry }
+     │              ├─── coi { total, monthly, breakdown, confidenceBand }
+     │              ├─── maturityLevel (0-4)
+     │              └─── quickWins []
+     │
+     ├─── If Success: Render Full Page
+     │
+     └─── If Error: notFound() → not-found.tsx
+
+
+Icon Legend:
+────────────
+🎯 Primary Conversion Element
+💰 Financial/ROI Element
+⚡ Performance/Efficiency Element
+🚀 Growth/Strategy Element
+📊 Data Visualization
+🎨 Styling/Visual Element
+
+
+Responsive Breakpoints:
+──────────────────────
+Mobile:     < 768px  (1 column, stacked)
+Tablet:     768-1024px (2 columns)
+Desktop:    > 1024px (3 columns)
+
+
+Component File Sizes:
+────────────────────
+page.tsx:           4.7 KB (main entry)
+CoiDisplay.tsx:     2.8 KB
+MaturityLevel.tsx:  1.9 KB
+QuickWinsCard.tsx:  1.8 KB
+ConfidenceBand.tsx: 2.5 KB
+variant-b.tsx:      3.2 KB
+variant-c.tsx:      4.1 KB
+loading.tsx:        1.8 KB
+not-found.tsx:      1.5 KB
+
+Total Bundle:       ~2.73 KB (compressed)
