@@ -4,6 +4,7 @@
   "description": "Agent Orchestra XML Protocol Implementation",
   "main": "dist/index.js",
   "scripts": {
+    "dev": "cd driver-os-app && npm run dev",
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
